@@ -50,4 +50,9 @@ if [ ! -d $venv_name ]; then
     virtualenv -p python3.6 $venv_name
 fi
 
+cd $venv_name
+pip install -r requirements.txt
+
+cd ~
+
 echo "==========================ALL SET========================"
