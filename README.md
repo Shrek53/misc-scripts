@@ -11,7 +11,7 @@ To run `init_env_setup.sh`
 
 `./init_env_setup.sh -p [PROJ_GIT_REPO] -u [PROJ_NAME]`
 
-It will inastall nginx, git, pip, gunicorn, virtualenv, Python3.6.4, pyenv
+It will install nginx, git, pip, gunicorn, virtualenv, Python3.6.4, pyenv
 
 Then clone the project ( you passed as parameter ) , Create a virtual environment for that project.
 Then install the requirements needed to run your project from `requirements.txt` inside the virtual environment. 

@@ -1,0 +1,14 @@
+[Unit]
+Description = proj_name
+After = network.target
+
+[Service]
+Restart=on-failure
+User = user_name
+Group = www-data
+WorkingDirectory = proj_loc
+Environment="PATH=venv_loc/bin"
+ExecStart = venv_loc/bin/gunicorn --workers 8 --bind unix:proj_loc/server.sock proj.wsgi:application --timeout 180
+
+[Install]
+WantedBy = multi-user.target
