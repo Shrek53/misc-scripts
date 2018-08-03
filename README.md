@@ -17,3 +17,6 @@ Then clone the project ( you passed as parameter ) , Create a virtual environmen
 Then install the requirements needed to run your project from `requirements.txt` inside the virtual environment. 
 Your Project will be inside projects/ directory and virtual environment for your project will inside the venv 
 directory. your virtual environment will be named as `venv_your_project_name` .
+
+After that a service and nginx configuation for you Application will be generated in the associated directory.
+

@@ -1,12 +1,4 @@
 #!/usr/bin/env bash
-while getopts p:n: option
-do
-case "${option}"
-in
-p) PROJ_GIT=${OPTARG};;
-n) PROJ_NAME=${OPTARG};;
-esac
-done
 
 #........................Helper Functions......................#
 function find_wsgi_application
@@ -19,6 +11,11 @@ function find_wsgi_application
 	eval "$1=$val4"
 }
 
+read -p "Project Name : " proj_name
+read -p "Project repository ( git@github.com:Shrek53/misc-scripts.git ): " proj_git
+read -p "Domain/IP (example.com): " domain
+
+
 echo "=========================Initiating environment setup============================="
 sudo apt-get update
 sudo apt-get install nginx
@@ -27,15 +24,15 @@ sudo apt-get install python-pip
 sudo pip install --upgrade pip
 sudo pip install gunicorn
 sudo pip install virtualenv
+
 mkdir projects
 cd projects
+
 echo "========= Did you add your ssh public key to the git repository ? (Y/N) =========="
 read user_response
-
 if [[ $user_response == 'Y'  ||  $user_response == 'y' ]]; then
-    echo $user_response
-    git clone $PROJ_GIT $PROJ_NAME
-    cd $PROJ_NAME
+    git clone $proj_git $proj_name
+    cd $proj_name
     proj_loc=$(pwd)
     wsgi_application=find_wsgi_application
     cd ..
@@ -58,7 +55,7 @@ if [ ! -d "venv" ]; then
 fi
 
 cd venv
-venv_name=venv_$PROJ_NAME
+venv_name=venv_$proj_name
 pyenv local 3.6.4
 if [ ! -d $venv_name ]; then
     virtualenv -p python3.6 $venv_name
@@ -71,10 +68,10 @@ pip install -r requirements.txt
 cd ~
 
 echo "==================== Create a service for your project ==================="
-echo "enter service name"
+echo "Enter service name"
 read service_name
 user_name=$(whoami)
-echo "enter number of worker"
+echo "Enter number of workers"
 read number_of_workers
 
 find_wsgi_application wsgi_application
@@ -100,5 +97,32 @@ ExecStart = $venv_loc/bin/gunicorn --workers $number_of_workers --bind unix:$pro
 [Install]
 WantedBy = multi-user.target
 " | sudo tee -a $service_file_name
+
+
+
+##---------------------------creating nginx config file-------------------------##
+
+nginx_config_file_name=/etc/nginx/conf.d/$service_name'.conf'
+sudo touch $nginx_config_file_name
+
+sudo echo "
+server {
+    listen 80;
+    server_name $domain;
+
+    location ^~ /static/  {
+        root $proj_loc;
+    }
+
+    location = /favico.ico  {
+        root $proj_loc/favico.ico;
+    }
+   location / {
+        include proxy_params;
+        proxy_pass http://unix:$proj_loc/$service_name.sock;
+    }
+}
+" | sudo tee -a $nginx_config_file_name
+
 
 echo "==========================ALL SET========================"
