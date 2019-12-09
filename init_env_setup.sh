@@ -63,8 +63,9 @@ fi
 
 cd $venv_name
 venv_loc=$(pwd)
+source $venv_loc/bin/activate
 pip install -r requirements.txt
-
+deactivate
 cd ~
 
 echo "==================== Create a service for your project ==================="
