@@ -10,7 +10,7 @@ function find_wsgi_application
 	val4=$(echo $val3 | cut -c 2- | sed -e "s/.application'//g")":application"
 	eval "$1=$val4"
 }
-s_user=$(whoami)
+user_name=$(whoami)
 read -p "Project Name : " proj_name
 read -p "Project repository ( git@github.com:Shrek53/misc-scripts.git ): " proj_git
 read -p "Domain/IP (example.com): " domain
@@ -45,7 +45,7 @@ fi
 cd ~
 sudo apt-get install make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev
 curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
-export PATH="/home/$s_user/.pyenv/bin:$PATH"
+export PATH="/home/$user_name/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 pyenv install 3.6.9
@@ -70,7 +70,6 @@ cd ~
 echo "==================== Create a service for your project ==================="
 echo "Enter service name"
 read service_name
-user_name=$(whoami)
 echo "Enter number of workers"
 read number_of_workers
 
