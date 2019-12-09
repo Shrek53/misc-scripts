@@ -48,7 +48,7 @@ curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv
 export PATH="/home/shrek53/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
-pyenv install 3.6.4
+pyenv install 3.6.9
 
 if [ ! -d "venv" ]; then
     mkdir venv
@@ -56,7 +56,7 @@ fi
 
 cd venv
 venv_name=venv_$proj_name
-pyenv local 3.6.4
+pyenv local 3.6.9
 if [ ! -d $venv_name ]; then
     virtualenv -p python3.6 $venv_name
 fi
