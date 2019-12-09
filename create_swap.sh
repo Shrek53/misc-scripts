@@ -8,5 +8,5 @@ sudo mkswap /swapfile
 sudo chmod 600 /swapfile
 sudo swapoff -a
 sudo swapon /swapfile
-echo "Your swap_size = "
+echo "Your swap size : "
 grep SwapTotal /proc/meminfo
