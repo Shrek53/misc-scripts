@@ -119,7 +119,7 @@ server {
     }
    location / {
         include proxy_params;
-        proxy_pass http://unix:$proj_loc/$service_name.sock;
+        proxy_pass http://unix:$proj_loc/server.sock;
     }
 }
 " | sudo tee -a $nginx_config_file_name
