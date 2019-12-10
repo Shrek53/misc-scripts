@@ -9,11 +9,11 @@ function find_wsgi_application() {
   val4=$(echo $val3 | cut -c 2- | sed -e "s/.application'//g")":application"
   echo "$val4"
 }
+
 user_name=$(whoami)
 read -p "Project Name : " proj_name
 read -p "Project repository ( git@github.com:Shrek53/misc-scripts.git ): " proj_git
 read -p "Domain/IP (example.com): " domain
-
 
 echo "=========================Initiating environment setup============================="
 sudo apt-get update
@@ -29,15 +29,15 @@ cd ~/projects || exit
 
 echo "========= Did you add your ssh public key to the git repository ? (Y/N) =========="
 read user_response
-if [[ $user_response == 'Y'  ||  $user_response == 'y' ]]; then
-    git clone "$proj_git" "$proj_name"
-    cd ~/projects/"$proj_name" || exit
-    proj_loc=$(pwd)
-    cd ..
+if [[ $user_response == 'Y' || $user_response == 'y' ]]; then
+  git clone "$proj_git" "$proj_name"
+  cd ~/projects/"$proj_name" || exit
+  proj_loc=$(pwd)
+  cd ..
 else
-    echo "========== Please add your ssh public key to the git repository ============"
-    sleep 1
-    exit
+  echo "========== Please add your ssh public key to the git repository ============"
+  sleep 1
+  exit
 fi
 
 cd ~ || exit
@@ -49,14 +49,14 @@ eval "$(pyenv virtualenv-init -)"
 pyenv install 3.6.9
 
 if [ ! -d "venv" ]; then
-    mkdir -p ~/venv
+  mkdir -p ~/venv
 fi
 
 cd ~/venv || exit
 venv_name=venv_$proj_name
 pyenv local 3.6.9
 if [ ! -d $venv_name ]; then
-    virtualenv -p python3.6 ~/venv/$venv_name
+  virtualenv -p python3.6 ~/venv/$venv_name
 fi
 
 cd ~/venv/"$venv_name" || exit
@@ -74,11 +74,8 @@ read service_name
 echo "Enter number of workers"
 read number_of_workers
 
-#find_wsgi_application wsgi_application
-wsgi_application=$(find_wsgi_application "$proj_loc")
-
 ##-----------------------------creating service file-----------------------------##
-
+wsgi_application=$(find_wsgi_application "$proj_loc")
 service_file_name=/etc/systemd/system/$service_name'.service'
 sudo touch $service_file_name
 
@@ -98,8 +95,6 @@ ExecStart = $venv_loc/bin/gunicorn --workers $number_of_workers --bind unix:$pro
 [Install]
 WantedBy = multi-user.target
 " | sudo tee -a $service_file_name
-
-
 
 ##---------------------------creating nginx config file-------------------------##
 
@@ -124,6 +119,5 @@ server {
     }
 }
 " | sudo tee -a $nginx_config_file_name
-
 
 echo "==========================ALL SET========================"
