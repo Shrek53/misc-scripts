@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 
 #........................Helper Functions......................#
-function find_wsgi_application
-{
-	val=$(pwd)$(find . \( -name 'settings.py' -or -name 'local.py' -or -name 'development.py' -or -name 'production.py' \) | cut -b 3-)
-	val1=$(cat $val | grep WSGI_APPLICATION | cut -d "=" -f 2)
-	val2=$(echo $val1 | cut -b 1-)
-	val3=($val2)
-	val4=$(echo $val3 | cut -c 2- | sed -e "s/.application'//g")":application"
-	eval "$1=$val4"
+function find_wsgi_application() {
+  val=$(find "$proj_loc" \( -name 'settings.py' -or -name 'local.py' -or -name 'development.py' -or -name 'production.py' \))
+  val1=$(cat $val | grep WSGI_APPLICATION | cut -d "=" -f 2)
+  val2=$(echo $val1 | cut -b 1-)
+  val3=("$val2")
+  val4=$(echo $val3 | cut -c 2- | sed -e "s/.application'//g")":application"
+  echo "$val4"
 }
 user_name=$(whoami)
 read -p "Project Name : " proj_name
@@ -25,16 +24,15 @@ sudo pip install --upgrade pip
 sudo pip install gunicorn
 sudo pip install virtualenv
 
-mkdir projects
-cd projects
+mkdir -p ~/projects
+cd ~/projects || exit
 
 echo "========= Did you add your ssh public key to the git repository ? (Y/N) =========="
 read user_response
 if [[ $user_response == 'Y'  ||  $user_response == 'y' ]]; then
-    git clone $proj_git $proj_name
-    cd $proj_name
+    git clone "$proj_git" "$proj_name"
+    cd ~/projects/"$proj_name" || exit
     proj_loc=$(pwd)
-    wsgi_application=find_wsgi_application
     cd ..
 else
     echo "========== Please add your ssh public key to the git repository ============"
@@ -42,7 +40,7 @@ else
     exit
 fi
 
-cd ~
+cd ~ || exit
 sudo apt-get install make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev
 curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash
 export PATH="/home/$user_name/.pyenv/bin:$PATH"
@@ -51,22 +49,24 @@ eval "$(pyenv virtualenv-init -)"
 pyenv install 3.6.9
 
 if [ ! -d "venv" ]; then
-    mkdir venv
+    mkdir -p ~/venv
 fi
 
-cd venv
+cd ~/venv || exit
 venv_name=venv_$proj_name
 pyenv local 3.6.9
 if [ ! -d $venv_name ]; then
-    virtualenv -p python3.6 $venv_name
+    virtualenv -p python3.6 ~/venv/$venv_name
 fi
 
-cd $venv_name
+cd ~/venv/"$venv_name" || exit
 venv_loc=$(pwd)
-source $venv_loc/bin/activate
-pip install -r requirements.txt
+echo $venv_loc
+source "$venv_loc"/bin/activate
+pip install gunicorn
+pip install -r "$proj_loc"/requirements.txt
 deactivate
-cd ~
+cd ~ || exit
 
 echo "==================== Create a service for your project ==================="
 echo "Enter service name"
@@ -74,7 +74,8 @@ read service_name
 echo "Enter number of workers"
 read number_of_workers
 
-find_wsgi_application wsgi_application
+#find_wsgi_application wsgi_application
+wsgi_application=$(find_wsgi_application "$proj_loc")
 
 ##-----------------------------creating service file-----------------------------##
 
