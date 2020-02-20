@@ -4,7 +4,7 @@
 This scripts will help to make your life easy by automating some essential installation and environment setup. 
 This scripts are meant to setup the environment and your supplied django project in an UBUNTU machine.  
 
-#Django project setup in ubuntu mechine
+# Django project setup in ubuntu mechine
 
 `init_env_setup.sh` is a script to initialize and setup the environment needed to run a django project.
 
@@ -21,7 +21,7 @@ directory. your virtual environment will be named as `venv_your_project_name` .
 
 After that a service and nginx configuation for you Application will be generated in the associated directory.
 
-#Create AWS server instances with boto3
+# Create AWS server instances with boto3
 
 **Install requirements**
 
